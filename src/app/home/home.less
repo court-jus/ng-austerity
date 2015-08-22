@@ -13,26 +13,31 @@
     line-height: 1.25;
   }
 
-  .btn {
-    font-size: 21px;
-    padding: 14px 24px;
-  }
 }
 
-.marketing {
-  .row {
-    margin-bottom: 10px;
-  }
-
-  .row:last-child {
-    margin-bottom: 0;
-  }
-  
-  h4 [class*=" icon-"], h4 [class^="icon-"] {
-    margin-right: 5px;
-    vertical-align: -10%;
-    font-size: 28px;
-    line-height: 1;
+.rhs-tracks {
+  border-collapse: separate;
+  border-spacing: 2px;
+  th, td {
+    &:first-child {
+      background-color: #E7D2A3;
+      border: 2px solid #EBAC49 !important;
+    }
+    &:nth-child(2) {
+      background-color: #D3D0D9;
+      border: 2px solid #B5AAD2 !important;
+    }
+    &:nth-child(3) {
+      background-color: #E8C672;
+      border: 2px solid #E68800 !important;
+    }
+    &:nth-child(4) {
+      background-color: #B5B3D7;
+      border: 2px solid #1F0EB2 !important;
+    }
+    &:nth-child(5) {
+      background-color: #93CE8C;
+      border: 2px solid #009235 !important;
+    }
   }
 }
-
