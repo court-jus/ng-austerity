@@ -1,16 +1,16 @@
 {
-  "author": "Josh David Miller",
-  "name": "ngbp",
-  "version": "0.3.2",
-  "homepage": "https://github.com/ngbp/ngbp",
+  "author": "Ghislain Lévêque",
+  "name": "ngAusterity",
+  "version": "0.0.1",
+  "homepage": "https://github.com/court-jus/ng-austerity",
   "licenses": {
     "type": "MIT",
-    "url": "https://raw.github.com/ngbp/ngbp/master/LICENSE"
+    "url": "https://raw.github.com/court-jus/ng-austerity/master/LICENSE"
   },
-  "bugs": "https://github.com/ngbp/ngbp/issues",
+  "bugs": "https://github.com/court-jus/ng-austerity/issues",
   "repository": {
     "type": "git",
-    "url": "git@github.com:ngbp/ngbp.git"
+    "url": "git@github.com:court-jus/ng-austerity.git"
   },
   "dependencies": {},
   "devDependencies": {
