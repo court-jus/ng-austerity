@@ -1,5 +1,5 @@
 <div class="jumbotron">
-  <h1>ngAusterity</h1>
+  <h1>Austerity</h1>
 
   <p class="lead">
     A solitaire boardgame designed by Jake Staines.
@@ -34,4 +34,45 @@
     <li plus-one></li>
   </ul> 
 
+</div>
+
+<div class="col-sm-12 col-md-6">
+  <pre>{{ model.bag }}</pre>
+  <pre>{{ model.current }}</pre>
+  <pre>{{ model.used }}</pre>
+  <pre>{{ model.tresory }}</pre>
+  <span>Employment: {{ model.employment }}</span><br />
+  <span>Public Safety: {{ model.public_safety }}</span><br />
+  <span>Wealth: {{ model.wealth }}</span><br />
+  <span>Health: {{ model.health }}</span><br />
+  <span>Popularity: {{ model.popularity }}</span><br />
+  <button class="btn btn-default"
+          ng-click="draw()"
+          ng-disabled="!model.candraw">
+    Draw
+  </button>
+  <button class="btn btn-default"
+          ng-click="resolve()">
+    Resolve
+  </button>
+  <button class="btn btn-default"
+          ng-click="borrow()">
+    Borrow money
+  </button>
+  <button class="btn btn-default"
+          ng-click="taxes()">
+    Raise taxes
+  </button>
+  <button class="btn btn-default"
+          ng-click="payloan()">
+    Pay loan
+  </button><br />
+  <span>Private enterprise: {{ model.private_enterprise_fin }}, {{ model.private_enterprise_cuts }} cuts.</span><br />
+  <span>National security: {{ model.national_security_fin }}, {{ model.national_security_cuts }} cuts.</span><br />
+  <span>Social welfare: {{ model.social_welfare_fin }}, {{ model.social_welfare_cuts }} cuts.</span><br />
+</div>
+<div class="col-sm-12 col-md-6">
+  <ul>
+    <li ng-repeat="logline in model.log track by $index">{{ logline }}</li>
+  </ul>
 </div>
