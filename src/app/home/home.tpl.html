@@ -36,7 +36,7 @@
 
 </div>
 
-<div class="col-md-12">
+<div class="col-md-12 hidden-xs hidden-sm">
   <div class="col-md-3">
   </div>
   <div class="col-md-3">
@@ -95,7 +95,7 @@
 
 <div class="col-sm-12 col-md-6">
   <pre>{{ model.bag }}</pre>
-  <pre>{{ model.current }}</pre>
+  <pre>{{ model.current_str }}</pre>
   <pre>{{ model.used }}</pre>
   <pre>{{ model.tresory }}</pre>
   <span>Employment: {{ model.employment }}</span><br />
@@ -105,23 +105,34 @@
   <span>Popularity: {{ model.popularity }}</span><br />
   <button class="btn btn-default"
           ng-click="draw()"
-          ng-disabled="!model.candraw">
+          ng-show="model.bag.length > 0 && model.candraw">
     Draw
   </button>
   <button class="btn btn-default"
-          ng-click="resolve()">
-    Resolve
+          ng-click="eoy()"
+          ng-show="model.bag.length === 0 && model.current.length === 0">
+    End of Year
   </button>
   <button class="btn btn-default"
-          ng-click="borrow()">
+          ng-click="resolve(event)"
+          ng-repeat="(code, event) in events"
+          title="{{ event.text }}"
+          ng-show="model.current_str === code">
+    {{ event.title }}
+  </button>
+  <button class="btn btn-default"
+          ng-click="borrow()"
+          ng-disabled="model.bag.length === 0">
     Borrow money
   </button>
   <button class="btn btn-default"
-          ng-click="taxes()">
+          ng-click="taxes()"
+          ng-disabled="model.bag.length === 0">
     Raise taxes
   </button>
   <button class="btn btn-default"
-          ng-click="payloan()">
+          ng-click="payloan()"
+          ng-disabled="model.bag.length === 0">
     Pay loan
   </button><br />
   <span>Private enterprise: {{ model.private_enterprise_fin }}, {{ model.private_enterprise_cuts }} cuts.</span><br />

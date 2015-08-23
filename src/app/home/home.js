@@ -27,7 +27,7 @@ angular.module( 'ngAusterity.home', [
   $stateProvider.state( 'home', {
     url: '/home',
     views: {
-      "main": {
+      'main': {
         controller: 'HomeCtrl',
         templateUrl: 'home/home.tpl.html'
       }
@@ -43,10 +43,12 @@ angular.module( 'ngAusterity.home', [
   $scope, $localStorage
 ) {
   $scope.model = {
+    year: 1,
     log: [],
     candraw: true,
     bag: [],
     current: [],
+    current_str: '',
     used: [],
     tresory: [],
     employment: 5,
@@ -63,100 +65,257 @@ angular.module( 'ngAusterity.home', [
   };
   if ($localStorage['ngAusterity']) {
     $scope.model = angular.copy($localStorage);
-    $scope.model.log.unshift("Game loaded from localStorage.");
+    $scope.model.log.unshift('Game loaded from localStorage.');
   } else {
     $scope.model.bag = ['b', 'b', 'b', 'b', 'r', 'r', 'u', 'u', 'w', 'y'];
-    $scope.model.log.unshift("Game initialized");
+    $scope.model.log.unshift('Game initialized');
   }
+  $scope.events = {
+    bb: {
+      title: 'Economic Downturn',
+      text: 'reduce Wealth by one and increase cuts on every institution by one.',
+      action: function() {
+        $scope.model.wealth -= 1;
+        $scope.model.private_enterprise_cuts += 1;
+        $scope.model.national_security_cuts += 1;
+        $scope.model.social_welfare_cuts += 1;
+      }
+    },
+    bu: {
+      title: 'Underfunded Police Force',
+      text: '(TODO spend Y or) add R.',
+      action: function() {
+        $scope.model.used.push('r');
+      }
+    },
+    br: {
+      title: 'Political corruption',
+      text: 'decrease Popularity by one.',
+      action: function() {
+        $scope.model.popularity -= 1;
+      }
+    },
+    ry: {
+      title: 'Anti-austerity Protests',
+      text: '(TODO either Remove Y and R or) increase Popularity by one and add B.',
+      action: function() {
+        $scope.model.popularity += 1;
+        $scope.model.used.push('b');
+      }
+    },
+    rr: {
+      title: 'Industrial Violations',
+      text: 'decrease Public Safety by two.',
+      action: function() {
+        $scope.model.public_safety -= 2;
+      }
+    },
+    rw: {
+      title: 'Welfare Cheats',
+      text: 'decrease Employment by one.',
+      action: function() {
+        $scope.model.employment -= 1;
+      }
+    },
+    ww: {
+      title: 'Back-to-Work Programme',
+      text: 'increase Employment by two.',
+      action: function() {
+        $scope.model.employment += 2;
+      }
+    },
+    yy: {
+      title: 'Budget Surplus',
+      text: 'increate Wealth by one; (TODO may spend both cubes to fund a single already-funded institution).',
+      action: function() {
+        $scope.model.wealth += 1;
+      }
+    },
+    by: {
+      title: 'Early Repayments',
+      text: '(TODO Optionnaly Spend Y to Remove B).',
+      action: function() {
+      }
+    },
+    uy: {
+      title: 'Security Spending',
+      text: 'increate Popularity (TODO or Public Safety by one).',
+      action: function() {
+        $scope.model.popularity += 1;
+      }
+    },
+    uu: {
+      title: 'Falling Crime Rates',
+      text: 'increase Public Safety by two.',
+      action: function() {
+        $scope.model.public_safety += 2;
+      }
+    },
+    ru: {
+      title: 'Special Operations',
+      text: '(TODO either Remove U and R or) reduce Public Safety by one.',
+      action: function() {
+        $scope.model.public_safety -= 1;
+      }
+    },
+    uw: {
+      title: 'Welfare Cheat Crackdown',
+      text: '(either Remove W or) increase Employment by one and decrease Popularity by one.',
+      action: function() {
+        $scope.model.employment += 1;
+        $scope.model.popularity -= 1;
+      }
+    },
+    wy: {
+      title: 'Nationalised Healthcare Spending',
+      text: 'increase Health by two.',
+      action: function() {
+        $scope.model.health += 2;
+      }
+    },
+    bw: {
+      title: 'Welfare Budget Problems',
+      text: '(TODO Spend Y or) reduce Health by one.',
+      action: function() {
+        $scope.model.health -= 1;
+      }
+    }
+  };
   $scope.drawOne = function(collection) {
     return _.pullAt(collection, _.random(collection.length-1))[0];
   };
   $scope.draw = function() {
     if ($scope.model.bag.length === 1) {
       $scope.model.used.push($scope.model.bag.pop());
-      $scope.model.log.unshift("Only one cube left in the bag, the cube goes to 'Used' without being resolved.");
+      $scope.model.log.unshift('Only one cube left in the bag, the cube goes to "Used" without being resolved.');
     } else {
       // Draw two
       var cube = $scope.drawOne($scope.model.bag);
-      $scope.model.log.unshift("Cube '" + cube + "' drawn from bag.");
+      $scope.model.log.unshift('Cube [' + cube + '] drawn from bag.');
       $scope.model.current.push(cube);
       cube = $scope.drawOne($scope.model.bag);
-      $scope.model.log.unshift("Cube '" + cube + "' drawn from bag.");
+      $scope.model.log.unshift('Cube [' + cube + '] drawn from bag.');
       $scope.model.current.push(cube);
     }
     $scope.model.candraw = false;
   };
-  $scope.resolve = function() {
-    var current = angular.copy($scope.model.current);
-    current = _(current).sort().join('');
-    if (current === 'bb') {
-      $scope.model.log.unshift("Economic Downturn : reduce Wealth by one and increase cuts on every institution by one.");
-      $scope.model.wealth -= 1;
-      $scope.model.private_enterprise_cuts += 1;
-      $scope.model.national_security_cuts += 1;
-      $scope.model.social_welfare_cuts += 1;
-    } else if (current === 'bu') {
-      $scope.model.log.unshift("Underfunded Police Force : (TODO spend Y or) add R.");
-      $scope.model.used.push('r');
-    } else if (current === 'br') {
-      $scope.model.log.unshift("Political corruption: decrease Popularity by one.");
-      $scope.model.popularity -= 1;
-    } else if (current === 'ry') {
-      $scope.model.log.unshift("Anti-austerity Protests: (TODO either Remove Y and R or) increase Popularity by one and add B.");
-      $scope.model.popularity += 1;
-      $scope.model.used.push('b');
-    } else if (current === 'rr') {
-      $scope.model.log.unshift("Industrial Violations: decrease Public Safety by two");
-      $scope.model.public_safety -= 2;
-    } else if (current === 'rw') {
-      $scope.model.log.unshift("Welfare Cheats: decrease Employment by one.");
-      $scope.model.employment -= 1;
-    } else if (current === 'ww') {
-      $scope.model.log.unshift("Back-to-Work Programme: increase Employment by two.");
-      $scope.model.employment += 2;
-    } else if (current === 'yy') {
-      $scope.model.log.unshift("Budget Surplus: increate Wealth by one; (TODO may spend both cubes to fund a single already-funded institution).");
-      $scope.model.wealth += 1;
-    } else if (current === 'by') {
-      $scope.model.log.unshift("Early Repayments: (TODO Optionnaly Spend Y to Remove B).");
-    } else if (current === 'uy') {
-      $scope.model.log.unshift("Security Spending: increate Popularity (TODO or Public Safety by one).");
-      $scope.model.popularity += 1;
-    } else if (current === 'uu') {
-      $scope.model.log.unshift("Falling Crime Rates: increase Public Safety by two.");
-      $scope.model.public_safety += 2;
-    } else if (current === 'ru') {
-      $scope.model.log.unshift("Special Operations: (TODO either Remove U and R or) reduce Public Safety by one.");
-      $scope.model.public_safety -= 1;
-    } else if (current === 'uw') {
-      $scope.model.log.unshift("Welfare Cheat Crackdown: (either Remove W or) increase Employment by one and decrease Popularity by one.");
-      $scope.model.employment += 1;
-      $scope.model.popularity -= 1;
-    } else if (current === 'wy') {
-      $scope.model.log.unshift("Nationalised Healthcare Spending: increase Health by two.");
-      $scope.model.health += 2;
-    } else if (current === 'bw') {
-      $scope.model.log.unshift("Welfare Budget Problems: (TODO Spend Y or) reduce Health by one.");
-      $scope.model.health -= 1;
+  $scope.aTakeFromb = function(collectionA, collectionB) {
+    while (collectionB.length > 0) {
+      collectionA.push($scope.drawOne(collectionB));
     }
-    $scope.model.used.push($scope.drawOne($scope.model.current));
-    $scope.model.used.push($scope.drawOne($scope.model.current));
-    $scope.model.candraw = true;
+  };
+  $scope.$watchCollection('model.current', function() {
+    console.log('watched');
+    var current_copy = angular.copy($scope.model.current);
+    $scope.model.current_str = _(current_copy).sort().join('');
+  });
+  $scope.resolve = function(event) {
+    $scope.model.log.unshift(event.title + ': ' + event.text);
+    event.action();
+    $scope.aTakeFromb($scope.model.used, $scope.model.current);
+    if ($scope.model.private_enterprise_cuts === 3) {
+      $scope.model.log.unshift('Private Enterprise Cuts: -2 employment.');
+      $scope.model.private_enterprise_cuts = 0;
+      $scope.model.employment -= 2;
+    }
+    if ($scope.model.national_security_cuts === 3) {
+      $scope.model.log.unshift('National Security Cuts: add R.');
+      $scope.model.national_security_cuts = 0;
+      $scope.model.used.push('r');
+    }
+    if ($scope.model.social_welfare_cuts === 3) {
+      $scope.model.log.unshift('Social Welfare Cuts: -2 health.');
+      $scope.model.social_welfare_cuts = 0;
+      $scope.model.health -= 2;
+    }
+    var lost = false;
+    if ($scope.model.employment === 0) {
+      lost = true;
+      $scope.model.log.unshift('GAME OVER: Employment = 0, you Lose');
+    } else if ($scope.model.public_safety === 0) {
+      lost = true;
+      $scope.model.log.unshift('GAME OVER: Public Safety = 0, you Lose');
+    } else if ($scope.model.wealth === 0) {
+      lost = true;
+      $scope.model.log.unshift('GAME OVER: Wealth = 0, you Lose');
+    } else if ($scope.model.health === 0) {
+      lost = true;
+      $scope.model.log.unshift('GAME OVER: Health = 0, you Lose');
+    } else if ($scope.model.popularity === 0) {
+      lost = true;
+      $scope.model.log.unshift('GAME OVER: Popularity = 0, you Lose');
+    }
+    if (!lost) {
+      $scope.model.candraw = true;
+    }
   };
   $scope.borrow = function() {
-    $scope.model.log.unshift("Borrow money : add YY to bag B.");
+    $scope.model.log.unshift('Borrow money : add YY to bag B.');
     $scope.model.used.push('y');
     $scope.model.used.push('y');
     $scope.model.bag.push('b');
   };
   $scope.taxes = function() {
-    $scope.model.log.unshift("Raise taxes : add to bag R, Y.");
+    $scope.model.log.unshift('Raise taxes : add to bag R, Y.');
     $scope.model.bag.push('r');
     $scope.model.bag.push('y');
   };
   $scope.payloan = function() {
-    $scope.model.log.unshift("Pay loan : (TODO remove YYB).");
+    $scope.model.log.unshift('Pay loan : (TODO remove YYB).');
     // TODO
+  };
+  $scope.eoy = function() {
+    $scope.model.log.unshift('End of Year ' + $scope.model.year);
+    // Check endgame conditions
+    var won = false;
+    if (!_($scope.model.used).contains('b')) {
+      $scope.model.log.unshift('GAME OVER: you Won !!');
+      won = true;
+    }
+    if ($scope.model.employment >= 9) {
+      $scope.model.log.unshift('Revenues: 2 Y');
+      $scope.model.used.push('y');
+      $scope.model.used.push('y');
+    } else if ($scope.model.employment >= 5) {
+      $scope.model.log.unshift('Revenues: 1 Y');
+      $scope.model.used.push('y');
+    }
+    if ($scope.model.wealth < $scope.model.employment) {
+      $scope.model.log.unshift('Adjust wealth towards employment: +1');
+      $scope.model.wealth += 1;
+    } else if ($scope.model.wealth > $scope.model.employment) {
+      $scope.model.log.unshift('Adjust wealth towards employment: -1');
+      $scope.model.wealth -= 1;
+    }
+    if ($scope.model.health < $scope.model.public_safety) {
+      $scope.model.log.unshift('Adjust health towards public safety: +1');
+      $scope.model.health += 1;
+    } else if ($scope.model.health > $scope.model.public_safety) {
+      $scope.model.log.unshift('Adjust health towards public safety: -1');
+      $scope.model.health -= 1;
+    }
+    if ($scope.model.popularity < $scope.model.wealth) {
+      $scope.model.log.unshift('Adjust popularity towards wealth: +1');
+      $scope.model.popularity += 1;
+    } else if ($scope.model.popularity > $scope.model.wealth) {
+      $scope.model.log.unshift('Adjust popularity towards wealth: -1');
+      $scope.model.popularity -= 1;
+    }
+    if ($scope.model.popularity < $scope.model.health) {
+      $scope.model.log.unshift('Adjust popularity towards health: +1');
+      $scope.model.popularity += 1;
+    } else if ($scope.model.popularity > $scope.model.health) {
+      $scope.model.log.unshift('Adjust popularity towards health: -1');
+      $scope.model.popularity -= 1;
+    }
+    $scope.aTakeFromb($scope.model.bag, $scope.model.used);
+    $scope.aTakeFromb($scope.model.bag, $scope.model.private_enterprise_fin);
+    $scope.aTakeFromb($scope.model.bag, $scope.model.national_security_fin);
+    $scope.aTakeFromb($scope.model.bag, $scope.model.social_welfare_fin);
+    if (!won) {
+      $scope.model.candraw = true;
+      $scope.model.year += 1;
+    }
   };
 })
 
