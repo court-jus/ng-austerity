@@ -1,117 +1,13 @@
-<div class="jumbotron">
-  <h1>Austerity</h1>
-
-  <p class="lead">
-    A solitaire boardgame designed by Jake Staines.
-  </p>
-
-  <ul class="list-inline social-buttons">
-    <li>
-      <iframe 
-        src="http://ghbtns.com/github-btn.html?user=court-jus&amp;repo=ng-austerity&amp;type=watch&amp;count=true" 
-        allowtransparency="true" 
-        frameborder="0" 
-        scrolling="0" 
-        width="110" 
-        height="20">
-      </iframe>
-    </li>
-    <li>
-      <iframe 
-        src="http://ghbtns.com/github-btn.html?user=court-jus&amp;repo=ng-austerity&amp;type=fork&amp;count=true" 
-        allowtransparency="true" 
-        frameborder="0" 
-        scrolling="0" 
-        width="95" 
-        height="20">
-      </iframe>
-    </li>
-    <li>
-       <iframe allowtransparency="true" frameborder="0" scrolling="no"
-        src="https://platform.twitter.com/widgets/tweet_button.html?url=http%3A%2F%2Fbit.ly%2FngAusterity&counturl=http%3A%2F%2Fcourt-jus.github.com%2Fng-austerity&text=Check%20out%20%23ng-austerity%20-%20an%20awesome%20boardgame&hashtags=boardgame&via=court_jus&related=court_jus"
-        style="width:130px; height:20px;"></iframe>
-    </li>
-    <li plus-one></li>
-  </ul> 
-
-</div>
-
-<div class="col-md-12 hidden-xs hidden-sm">
-  <div class="col-md-3">
-  </div>
-  <div class="col-md-3">
-  </div>
-  <div class="col-md-4">
-  </div>
-  <div class="col-md-2">
-    <table class="table rhs-tracks">
-      <thead>
-        <tr>
-          <th>E</th>
-          <th>PS</th>
-          <th>W</th>
-          <th>H</th>
-          <th>P</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr>
-          <td>10</td> <td>10</td> <td>10</td> <td>10</td> <td>10</td>
-        </tr>
-        <tr>
-          <td>&nbsp;</td> <td>&nbsp;</td> <td>&nbsp;</td> <td>&nbsp;</td> <td>&nbsp;</td>
-        </tr>
-        <tr>
-          <td>&nbsp;</td> <td>&nbsp;</td> <td>&nbsp;</td> <td>&nbsp;</td> <td>&nbsp;</td>
-        </tr>
-        <tr>
-          <td>7</td> <td>7</td> <td>7</td> <td>7</td> <td>7</td>
-        </tr>
-        <tr>
-          <td>&nbsp;</td> <td>&nbsp;</td> <td>&nbsp;</td> <td>&nbsp;</td> <td>&nbsp;</td>
-        </tr>
-        <tr>
-          <td>5</td> <td>5</td> <td>5</td> <td>5</td> <td>5</td>
-        </tr>
-        <tr>
-          <td>&nbsp;</td> <td>&nbsp;</td> <td>&nbsp;</td> <td>&nbsp;</td> <td>&nbsp;</td>
-        </tr>
-        <tr>
-          <td>3</td> <td>3</td> <td>3</td> <td>3</td> <td>3</td>
-        </tr>
-        <tr>
-          <td>&nbsp;</td> <td>&nbsp;</td> <td>&nbsp;</td> <td>&nbsp;</td> <td>&nbsp;</td>
-        </tr>
-        <tr>
-          <td>1</td> <td>1</td> <td>1</td> <td>1</td> <td>1</td>
-        </tr>
-        <tr>
-          <td>&nbsp;</td> <td>&nbsp;</td> <td>&nbsp;</td> <td>&nbsp;</td> <td>&nbsp;</td>
-        </tr>
-      </tbody>
-    </table>
-  </div>
-</div>
-
-<div class="col-sm-12 col-md-6">
-  <pre>{{ model.bag }}</pre>
-  <pre>{{ model.current_str }}</pre>
-  <pre>{{ model.used }}</pre>
-  <pre>{{ model.tresory }}</pre>
-  <span>Employment: {{ model.employment }}</span><br />
-  <span>Public Safety: {{ model.public_safety }}</span><br />
-  <span>Wealth: {{ model.wealth }}</span><br />
-  <span>Health: {{ model.health }}</span><br />
-  <span>Popularity: {{ model.popularity }}</span><br />
+<div class="hidden-md hidden-lg">
   <button class="btn btn-default"
           ng-click="draw()"
           ng-show="model.bag.length > 0 && model.candraw">
-    Draw
+    Year {{ model.year }} - Draw
   </button>
   <button class="btn btn-default"
           ng-click="eoy()"
           ng-show="model.bag.length === 0 && model.current.length === 0">
-    End of Year
+    End of Year {{ model.year }}
   </button>
   <button class="btn btn-default"
           ng-click="resolve(event)"
@@ -134,7 +30,143 @@
           ng-click="payloan()"
           ng-disabled="model.bag.length === 0">
     Pay loan
-  </button><br />
+  </button>
+</div>
+<div class="col-md-12 hidden-xs hidden-sm">
+  <div class="col-md-3">
+    <div class="panel panel-default">
+      <div class="panel-heading">
+        Bag
+      </div>
+      <div class="panel-body">
+        <div class="cube cube-{{ cube }}"
+              ng-repeat="cube in model.bag track by $index"></div>
+      </div>
+    </div>
+    <div class="panel panel-default">
+      <div class="panel-heading">Current</div>
+      <div class="panel-body">
+        <div class="cube cube-{{ cube }}"
+              ng-repeat="cube in model.current track by $index"></div>
+      </div>
+    </div>
+    <div class="panel panel-default">
+      <div class="panel-heading">Used</div>
+      <div class="panel-body">
+        <div class="cube cube-{{ cube }}"
+              ng-repeat="cube in model.used track by $index"></div>
+      </div>
+    </div>
+    <div class="panel panel-default">
+      <div class="panel-heading">Tresory</div>
+      <div class="panel-body">
+        <div class="cube cube-{{ cube }}"
+              ng-repeat="cube in model.tresory track by $index"></div>
+      </div>
+    </div>
+  </div>
+  <div class="col-md-3"
+       ng-hide="model.gameover">
+    <button class="btn btn-default col-sm-12"
+            ng-click="draw()"
+            ng-show="model.bag.length > 0 && model.candraw">
+      Year {{ model.year }} - <b>Draw</b>
+    </button>
+    <button class="btn btn-default col-sm-12"
+            ng-click="resolve(event)"
+            ng-repeat="(code, event) in events"
+            title="{{ event.text }}"
+            ng-show="model.current_str === code">
+      <b>{{ event.title }}</b>
+    </button>
+    <button class="btn btn-default col-sm-12"
+            ng-click="eoy()"
+            ng-show="model.bag.length === 0 && model.current.length === 0">
+      <b>End of Year</b> {{ model.year }}
+    </button>
+    <button class="btn btn-default col-sm-12"
+            ng-click="borrow()"
+            ng-disabled="model.bag.length === 0">
+      <b>Borrow money</b><hr />
+      Add <span class="cube cube-y"></span><span class="cube cube-y"></span>
+      to bag <span class="cube cube-b"></span>
+    </button>
+    <button class="btn btn-default col-sm-12"
+            ng-click="taxes()"
+            ng-disabled="model.bag.length === 0">
+      <b>Raise taxes</b><hr />
+      Add to bag <span class="cube cube-y"></span><span class="cube cube-r"></span>
+    </button>
+    <button class="btn btn-default col-sm-12"
+            ng-click="payloan()"
+            ng-disabled="model.bag.length === 0">
+      <b>Pay loan</b><hr />
+      Remove <span class="cube cube-y"></span><span class="cube cube-y"></span><span class="cube cube-b"></span>
+    </button>
+  </div>
+  <div class="col-md-3 text-center"
+       ng-show="model.gameover">
+    <h2 class="text-danger">Game Over</h2>
+    <h4>{{ model.gameover }}</h4>
+    Current year : {{ model.year }}
+    <button class="btn btn-default col-sm-12"
+            ng-click="newgame()"
+            ng-disabled="model.bag.length === 0">
+      <b>New game</b>
+    </button>
+  </div>
+  <div class="col-md-4">
+    <ul>
+      <li ng-repeat="(code, event) in events"
+          ng-class="{'text-primary': model.current_str === code,
+                     'text-muted': model.current_str !== code}">
+        <span ng-repeat="cube in event.cubes track by $index"
+              class="cube cube-{{ cube }}"></span>
+        {{ event.title }}:<br />
+        <small ng-bind-html="event.text"></small>
+      </li>
+    </ul>
+  </div>
+  <div class="col-md-2">
+    <table class="table rhs-tracks">
+      <thead>
+        <tr>
+          <th>E</th>
+          <th>PS</th>
+          <th>W</th>
+          <th>H</th>
+          <th>P</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr ng-repeat="line in scale_lines track by $index">
+          <td ng-repeat="n in [model.employment,
+                               model.public_safety,
+                               model.wealth,
+                               model.health,
+                               model.popularity] track by $index"
+              class="text-center"
+              ng-class="{'activescale': n === line[0],
+                         'text-danger': n === 0}">
+            <b ng-show="n === line[0]">{{ n }}</b>
+            <small ng-hide="n === line[0]">{{ line[1] }}</small>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<div class="col-sm-12 col-md-6">
+  <pre>{{ model.bag }}</pre>
+  <pre>{{ model.current_str }}</pre>
+  <pre>{{ model.used }}</pre>
+  <pre>{{ model.tresory }}</pre>
+  <span>Employment: {{ model.employment }}</span><br />
+  <span>Public Safety: {{ model.public_safety }}</span><br />
+  <span>Wealth: {{ model.wealth }}</span><br />
+  <span>Health: {{ model.health }}</span><br />
+  <span>Popularity: {{ model.popularity }}</span><br />
   <span>Private enterprise: {{ model.private_enterprise_fin }}, {{ model.private_enterprise_cuts }} cuts.</span><br />
   <span>National security: {{ model.national_security_fin }}, {{ model.national_security_cuts }} cuts.</span><br />
   <span>Social welfare: {{ model.social_welfare_fin }}, {{ model.social_welfare_cuts }} cuts.</span><br />

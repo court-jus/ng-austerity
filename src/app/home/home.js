@@ -14,6 +14,7 @@
  */
 angular.module( 'ngAusterity.home', [
   'ui.router',
+  'ngSanitize',
   'ngStorage',
   'plusOne'
 ])
@@ -42,36 +43,9 @@ angular.module( 'ngAusterity.home', [
 .controller( 'HomeCtrl', function HomeController(
   $scope, $localStorage
 ) {
-  $scope.model = {
-    year: 1,
-    log: [],
-    candraw: true,
-    bag: [],
-    current: [],
-    current_str: '',
-    used: [],
-    tresory: [],
-    employment: 5,
-    public_safety: 5,
-    wealth: 5,
-    health: 5,
-    popularity: 5,
-    private_enterprise_cuts: 0,
-    national_security_cuts: 0,
-    social_welfare_cuts: 0,
-    private_enterprise_fin: [],
-    national_security_fin: [],
-    social_welfare_fin: []
-  };
-  if ($localStorage['ngAusterity']) {
-    $scope.model = angular.copy($localStorage);
-    $scope.model.log.unshift('Game loaded from localStorage.');
-  } else {
-    $scope.model.bag = ['b', 'b', 'b', 'b', 'r', 'r', 'u', 'u', 'w', 'y'];
-    $scope.model.log.unshift('Game initialized');
-  }
   $scope.events = {
     bb: {
+      cubes: ['b', 'b'],
       title: 'Economic Downturn',
       text: 'reduce Wealth by one and increase cuts on every institution by one.',
       action: function() {
@@ -82,13 +56,16 @@ angular.module( 'ngAusterity.home', [
       }
     },
     bu: {
+      cubes: ['b', 'u'],
       title: 'Underfunded Police Force',
-      text: '(TODO spend Y or) add R.',
+      text: '(TODO spend <span class="cube cube-y"></span> or) add ' +
+            '<span class="cube cube-r"></span>.',
       action: function() {
         $scope.model.used.push('r');
       }
     },
     br: {
+      cubes: ['b', 'r'],
       title: 'Political corruption',
       text: 'decrease Popularity by one.',
       action: function() {
@@ -96,14 +73,18 @@ angular.module( 'ngAusterity.home', [
       }
     },
     ry: {
+      cubes: ['r', 'y'],
       title: 'Anti-austerity Protests',
-      text: '(TODO either Remove Y and R or) increase Popularity by one and add B.',
+      text: '(TODO either Remove <span class="cube cube-y"></span> and ' +
+            '<span class="cube cube-r"></span> or) increase Popularity by one ' +
+            ' and add <span class="cube cube-b"></span>.',
       action: function() {
         $scope.model.popularity += 1;
         $scope.model.used.push('b');
       }
     },
     rr: {
+      cubes: ['r', 'r'],
       title: 'Industrial Violations',
       text: 'decrease Public Safety by two.',
       action: function() {
@@ -111,6 +92,7 @@ angular.module( 'ngAusterity.home', [
       }
     },
     rw: {
+      cubes: ['r', 'w'],
       title: 'Welfare Cheats',
       text: 'decrease Employment by one.',
       action: function() {
@@ -118,6 +100,7 @@ angular.module( 'ngAusterity.home', [
       }
     },
     ww: {
+      cubes: ['w', 'w'],
       title: 'Back-to-Work Programme',
       text: 'increase Employment by two.',
       action: function() {
@@ -125,6 +108,7 @@ angular.module( 'ngAusterity.home', [
       }
     },
     yy: {
+      cubes: ['y', 'y'],
       title: 'Budget Surplus',
       text: 'increate Wealth by one; (TODO may spend both cubes to fund a single already-funded institution).',
       action: function() {
@@ -132,12 +116,15 @@ angular.module( 'ngAusterity.home', [
       }
     },
     by: {
+      cubes: ['b', 'y'],
       title: 'Early Repayments',
-      text: '(TODO Optionnaly Spend Y to Remove B).',
+      text: '(TODO Optionnaly Spend <span class="cube cube-y"></span> to ' +
+            'Remove <span class="cube cube-b"></span>).',
       action: function() {
       }
     },
     uy: {
+      cubes: ['u', 'y'],
       title: 'Security Spending',
       text: 'increate Popularity (TODO or Public Safety by one).',
       action: function() {
@@ -145,6 +132,7 @@ angular.module( 'ngAusterity.home', [
       }
     },
     uu: {
+      cubes: ['u', 'u'],
       title: 'Falling Crime Rates',
       text: 'increase Public Safety by two.',
       action: function() {
@@ -152,21 +140,26 @@ angular.module( 'ngAusterity.home', [
       }
     },
     ru: {
+      cubes: ['r', 'u'],
       title: 'Special Operations',
-      text: '(TODO either Remove U and R or) reduce Public Safety by one.',
+      text: '(TODO either Remove <span class="cube cube-u"></span> and ' +
+            '<span class="cube cube-r"></span> or) reduce Public Safety by one.',
       action: function() {
         $scope.model.public_safety -= 1;
       }
     },
     uw: {
+      cubes: ['u', 'w'],
       title: 'Welfare Cheat Crackdown',
-      text: '(either Remove W or) increase Employment by one and decrease Popularity by one.',
+      text: '(either Remove <span class="cube cube-w"></span> or) increase ' +
+            'Employment by one and decrease Popularity by one.',
       action: function() {
         $scope.model.employment += 1;
         $scope.model.popularity -= 1;
       }
     },
     wy: {
+      cubes: ['w', 'y'],
       title: 'Nationalised Healthcare Spending',
       text: 'increase Health by two.',
       action: function() {
@@ -174,13 +167,19 @@ angular.module( 'ngAusterity.home', [
       }
     },
     bw: {
+      cubes: ['b', 'w'],
       title: 'Welfare Budget Problems',
-      text: '(TODO Spend Y or) reduce Health by one.',
+      text: '(TODO Spend <span class="cube cube-y"></span> or) reduce Health by one.',
       action: function() {
         $scope.model.health -= 1;
       }
     }
   };
+  $scope.scale_lines = [
+    [10, '10'], [9, ''], [8, ''], [7, '7'], [6, ''],
+    [5, '5'], [4, ''], [3, '3'], [2, ''], [1, '1'],
+    [0, '']
+  ];
   $scope.drawOne = function(collection) {
     return _.pullAt(collection, _.random(collection.length-1))[0];
   };
@@ -204,11 +203,6 @@ angular.module( 'ngAusterity.home', [
       collectionA.push($scope.drawOne(collectionB));
     }
   };
-  $scope.$watchCollection('model.current', function() {
-    console.log('watched');
-    var current_copy = angular.copy($scope.model.current);
-    $scope.model.current_str = _(current_copy).sort().join('');
-  });
   $scope.resolve = function(event) {
     $scope.model.log.unshift(event.title + ': ' + event.text);
     event.action();
@@ -229,24 +223,28 @@ angular.module( 'ngAusterity.home', [
       $scope.model.health -= 2;
     }
     var lost = false;
+    var message = null;
     if ($scope.model.employment === 0) {
       lost = true;
-      $scope.model.log.unshift('GAME OVER: Employment = 0, you Lose');
+      message = 'Employment = 0, you Lose';
     } else if ($scope.model.public_safety === 0) {
       lost = true;
-      $scope.model.log.unshift('GAME OVER: Public Safety = 0, you Lose');
+      message = 'Public Safety = 0, you Lose';
     } else if ($scope.model.wealth === 0) {
       lost = true;
-      $scope.model.log.unshift('GAME OVER: Wealth = 0, you Lose');
+      message = 'Wealth = 0, you Lose';
     } else if ($scope.model.health === 0) {
       lost = true;
-      $scope.model.log.unshift('GAME OVER: Health = 0, you Lose');
+      message = 'Health = 0, you Lose';
     } else if ($scope.model.popularity === 0) {
       lost = true;
-      $scope.model.log.unshift('GAME OVER: Popularity = 0, you Lose');
+      message = 'Popularity = 0, you Lose';
     }
     if (!lost) {
       $scope.model.candraw = true;
+    } else {
+      $scope.model.gameover = message;
+      $scope.model.log.unshift('GAME OVER: ' + message);
     }
   };
   $scope.borrow = function() {
@@ -317,6 +315,43 @@ angular.module( 'ngAusterity.home', [
       $scope.model.year += 1;
     }
   };
+  $scope.newgame = function() {
+    $scope.model = {
+      year: 1,
+      log: [],
+      candraw: true,
+      gameover: null,
+      bag: [],
+      current: [],
+      current_str: '',
+      used: [],
+      tresory: [],
+      employment: 5,
+      public_safety: 5,
+      wealth: 5,
+      health: 5,
+      popularity: 5,
+      private_enterprise_cuts: 0,
+      national_security_cuts: 0,
+      social_welfare_cuts: 0,
+      private_enterprise_fin: [],
+      national_security_fin: [],
+      social_welfare_fin: []
+    };
+    $scope.model.bag = ['b', 'b', 'b', 'b', 'r', 'r', 'u', 'u', 'w', 'y'];
+    $scope.model.log.unshift('Game initialized');
+  };
+  $scope.model = {};
+  if ($localStorage['ngAusterity']) {
+    $scope.model = angular.copy($localStorage);
+    $scope.model.log.unshift('Game loaded from localStorage.');
+  } else {
+    $scope.newgame();
+  }
+  $scope.$watchCollection('model.current', function() {
+    var current_copy = angular.copy($scope.model.current);
+    $scope.model.current_str = _(current_copy).sort().join('');
+  });
 })
 
 ;

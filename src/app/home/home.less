@@ -15,9 +15,35 @@
 
 }
 
+.cube {
+    width: 10px;
+    height: 10px;
+    border: 1px solid black;
+    display: inline-block;
+    margin: 2px;
+    &.cube-b {
+        background-color: black;
+    }
+    &.cube-y {
+        background-color: yellow;
+    }
+    &.cube-r {
+        background-color: red;
+    }
+    &.cube-u {
+        background-color: blue;
+    }
+    &.cube-w {
+        background-color: white;
+    }
+}
+
 .rhs-tracks {
   border-collapse: separate;
   border-spacing: 2px;
+  tr {
+    height: 40px;
+  }
   th, td {
     &:first-child {
       background-color: #E7D2A3;
@@ -38,6 +64,9 @@
     &:nth-child(5) {
       background-color: #93CE8C;
       border: 2px solid #009235 !important;
+    }
+    &.activescale {
+      border: 2px solid black !important;
     }
   }
 }
