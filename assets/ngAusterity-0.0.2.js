@@ -1,5 +1,5 @@
 /**
- * ngAusterity - v0.0.1 - 2015-09-03
+ * ngAusterity - v0.0.2 - 2015-09-03
  * https://github.com/court-jus/ng-austerity
  *
  * Copyright (c) 2015 Ghislain Lévêque
