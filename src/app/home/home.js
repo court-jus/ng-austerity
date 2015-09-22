@@ -40,9 +40,18 @@ angular.module( 'ngAusterity.home', [
 /**
  * And of course we define a controller for our route.
  */
+<<<<<<< HEAD
 .controller( 'HomeCtrl', function HomeController(
   $scope, $localStorage, $q
 ) {
+=======
+.controller( 'HomeCtrl', [
+  '$scope', '$localStorage', '$q', '$modal',
+  function HomeController(
+    $scope, $localStorage, $q, $modal
+    ) {
+  console.log($modal);
+>>>>>>> b17806d... WIP on canremove, remove and payloan
   $scope.events = {
     bb: {
       cubes: ['b', 'b'],
@@ -267,7 +276,8 @@ angular.module( 'ngAusterity.home', [
     $scope.model.bag.push('y');
   };
   $scope.canpayloan = function() {
-    return $scope.canremove('y', 2) && $scope.canremove('b', 1);
+    return true;
+    // return $scope.canremove('y', 2) && $scope.canremove('b', 1);
     /*
     var usable = _($scope.model.used)
                  .concat($scope.model.treasury)
@@ -284,16 +294,22 @@ angular.module( 'ngAusterity.home', [
   $scope.payloan = function() {
     $scope.model.log.unshift('Pay loan : remove YYB.');
     $scope.candraw = false;
+    var cubes_removed = [];
+    var handler = function(result) {
+      console.log("handling", result, "from payloan");
+      cubes_removed.push(result);
+    };
+
     var should_remove = ['y', 'y', 'b'];
     var color = should_remove.shift();
-    var promise = $scope.remove(color);
-    promise.then(function() {
-      if (should_remove.length > 0) {
-        color = should_remove.shift();
-        promise = $scope.remove(color);
-      } else {
-        $scope.candraw = true;
-      }
+    var next_promise = $scope.remove(color).then(handler);
+    while (should_remove.length > 0) {
+      color = should_remove.shift();
+      next_promise = next_promise
+        .then($scope.remove(color).then(handler));
+    }
+    next_promise.then(function(data) {
+      console.log("we have all", cubes_removed);
     });
   };
   $scope.canremove = function(color, count) {
@@ -304,21 +320,24 @@ angular.module( 'ngAusterity.home', [
     return (usable.countBy(function(i) { return i === color; })
                   .value()['true'] >= count);
   };
-  $scope.remove = function(colors, zone) {
+  $scope.remove = function(color) {
     /* Remove - remove a cube of the relevant colour from the Current area
      * and out of the game. If there is not a cube of the relevant colour in
      * the Current area, you may remove it from the Used area or the Treasury
      * instead.
      */
-    var removed = [];
-    while(colors.length > 0) {
-      var color = colors.shift();
-      if ($scope.aTakeColorFromb(removed, $scope.model.current, color)) {
-        return removed;
-      } else {
-        $scope.model.choose_remove = colors;
+    var choices = ['a', 'b'];
+    var modalInstance = $modal.open({
+      templateUrl: 'home/remove.modal.tpl.html',
+      controller: 'RemoveModalCtrl',
+      size: 'sm',
+      resolve: {
+        choices: function() {
+          return choices;
+        }
       }
-    }
+    });
+    return modalInstance.result;
   };
   $scope.eoy = function() {
     $scope.model.log.unshift('End of Year ' + $scope.model.year);
@@ -411,7 +430,22 @@ angular.module( 'ngAusterity.home', [
     var current_copy = angular.copy($scope.model.current);
     $scope.model.current_str = _(current_copy).sort().join('');
   });
-})
+}])
+
+.controller('RemoveModalCtrl', [
+  '$scope', '$modalInstance', 'choices',
+  function($scope, $modalInstance, choices) {
+    $scope.choices = choices;
+    $scope.selected = {
+      choice: $scope.choices[0]
+    };
+    $scope.ok = function() {
+      $modalInstance.close($scope.selected.choice);
+    };
+    $scope.cancel = function() {
+      $modalInstance.dismiss();
+    };
+}])
 
 ;
 
