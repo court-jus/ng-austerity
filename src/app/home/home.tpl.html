@@ -28,7 +28,7 @@
   </button>
   <button class="btn btn-default"
           ng-click="payloan()"
-          ng-disabled="model.bag.length === 0">
+          ng-disabled="model.bag.length === 0 || !canpayloan()">
     Pay loan
   </button>
 </div>
@@ -51,17 +51,29 @@
       </div>
     </div>
     <div class="panel panel-default">
-      <div class="panel-heading">Used</div>
+      <div class="panel-heading">
+        Used
+        <i class="fa fa-trash"
+           title="Remove from here"
+           ng-show="model.choose_remove.length > 0"
+           ng-click="remove(choose_remove, 'used')"></i>
+      </div>
       <div class="panel-body">
         <div class="cube cube-{{ cube }}"
               ng-repeat="cube in model.used track by $index"></div>
       </div>
     </div>
     <div class="panel panel-default">
-      <div class="panel-heading">Tresory</div>
+      <div class="panel-heading">
+        Treasury
+        <i class="fa fa-trash"
+           title="Remove from here"
+           ng-show="model.choose_remove.length > 0"
+           ng-click="remove(choose_remove, 'treasury')"></i>
+      </div>
       <div class="panel-body">
         <div class="cube cube-{{ cube }}"
-              ng-repeat="cube in model.tresory track by $index"></div>
+              ng-repeat="cube in model.treasury track by $index"></div>
       </div>
     </div>
   </div>
@@ -99,7 +111,7 @@
     </button>
     <button class="btn btn-default col-sm-12"
             ng-click="payloan()"
-            ng-disabled="model.bag.length === 0">
+            ng-disabled="model.bag.length === 0 || !canpayloan()">
       <b>Pay loan</b><hr />
       Remove <span class="cube cube-y"></span><span class="cube cube-y"></span><span class="cube cube-b"></span>
     </button>
@@ -161,7 +173,7 @@
   <pre>{{ model.bag }}</pre>
   <pre>{{ model.current_str }}</pre>
   <pre>{{ model.used }}</pre>
-  <pre>{{ model.tresory }}</pre>
+  <pre>{{ model.treasury }}</pre>
   <span>Employment: {{ model.employment }}</span><br />
   <span>Public Safety: {{ model.public_safety }}</span><br />
   <span>Wealth: {{ model.wealth }}</span><br />
