@@ -9,13 +9,15 @@
           ng-show="model.bag.length === 0 && model.current.length === 0">
     End of Year {{ model.year }}
   </button>
-  <button class="btn btn-default"
-          ng-click="resolve(event)"
-          ng-repeat="(code, event) in events"
-          title="{{ event.text }}"
-          ng-show="model.current_str === code">
-    {{ event.title }}
-  </button>
+  <div ng-repeat="(code, event_choices) in events"
+       ng-show="model.current_str === code">
+    <button class="btn btn-default"
+            ng-repeat="event in event_choices"
+            title="{{ event.title }}"
+            ng-click="resolve(event)"
+            ng-bind-html="event.text">
+    </button>
+  </div>
   <button class="btn btn-default"
           ng-click="borrow()"
           ng-disabled="model.bag.length === 0">
@@ -84,13 +86,15 @@
             ng-show="model.bag.length > 0 && model.candraw">
       Year {{ model.year }} - <b>Draw</b>
     </button>
-    <button class="btn btn-default col-sm-12"
-            ng-click="resolve(event)"
-            ng-repeat="(code, event) in events"
-            title="{{ event.text }}"
-            ng-show="model.current_str === code">
-      <b>{{ event.title }}</b>
-    </button>
+    <div ng-repeat="(code, event_choices) in events"
+         ng-show="model.current_str === code">
+      <button class="btn btn-default col-sm-12"
+              ng-click="resolve(event)"
+              ng-repeat="event in event_choices"
+              ng-bind-html="event.text"
+              title="{{ event.title }}">
+      </button>
+    </div>
     <button class="btn btn-default col-sm-12"
             ng-click="eoy()"
             ng-show="model.bag.length === 0 && model.current.length === 0">
@@ -129,13 +133,17 @@
   </div>
   <div class="col-md-4">
     <ul>
-      <li ng-repeat="(code, event) in events"
+      <li ng-repeat="(code, event_choices) in events"
           ng-class="{'text-primary': model.current_str === code,
                      'text-muted': model.current_str !== code}">
-        <span ng-repeat="cube in event.cubes track by $index"
+        <span ng-repeat="cube in event_choices[0].cubes track by $index"
               class="cube cube-{{ cube }}"></span>
-        {{ event.title }}:<br />
-        <small ng-bind-html="event.text"></small>
+        {{ event_choices[0].title }}:<br />
+        <ul>
+          <li ng-repeat="event in event_choices">
+            <small ng-bind-html="event.text"></small>
+          </li>
+        </ul>
       </li>
     </ul>
   </div>

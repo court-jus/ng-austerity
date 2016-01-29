@@ -40,20 +40,14 @@ angular.module( 'ngAusterity.home', [
 /**
  * And of course we define a controller for our route.
  */
-<<<<<<< HEAD
-.controller( 'HomeCtrl', function HomeController(
-  $scope, $localStorage, $q
-) {
-=======
 .controller( 'HomeCtrl', [
   '$scope', '$localStorage', '$q', '$modal',
   function HomeController(
     $scope, $localStorage, $q, $modal
     ) {
   console.log($modal);
->>>>>>> b17806d... WIP on canremove, remove and payloan
   $scope.events = {
-    bb: {
+    bb: [{
       cubes: ['b', 'b'],
       title: 'Economic Downturn',
       text: 'reduce Wealth by one and increase cuts on every institution by one.',
@@ -63,101 +57,161 @@ angular.module( 'ngAusterity.home', [
         $scope.model.national_security_cuts += 1;
         $scope.model.social_welfare_cuts += 1;
       }
-    },
-    bu: {
+    }],
+    bu: [{
       cubes: ['b', 'u'],
       title: 'Underfunded Police Force',
-      text: '(TODO spend <span class="cube cube-y"></span> or) add ' +
-            '<span class="cube cube-r"></span>.',
+      text: 'Spend <span class="cube cube-y"></span>',
+      action: function() {
+        alert('Spend not implemented');
+      }
+    }, {
+      cubes: ['b', 'u'],
+      title: 'Underfunded Police Force',
+      text: 'Add <span class="cube cube-r"></span>',
       action: function() {
         $scope.model.used.push('r');
       }
-    },
-    br: {
+    }],
+    br: [{
       cubes: ['b', 'r'],
       title: 'Political corruption',
       text: 'decrease Popularity by one.',
       action: function() {
         $scope.model.popularity -= 1;
       }
-    },
-    ry: {
+    }],
+    ry: [{
       cubes: ['r', 'y'],
       title: 'Anti-austerity Protests',
-      text: '(TODO either Remove <span class="cube cube-y"></span> and ' +
-            '<span class="cube cube-r"></span> or) increase Popularity by one ' +
-            ' and add <span class="cube cube-b"></span>.',
+      text: 'Remove <span class="cube cube-y"></span> and ' +
+            '<span class="cube cube-r"></span>',
+      action: function() {
+        $scope.model.log.unshift('Anti-austerity Protests: remove YR.');
+        $scope.candraw = false;
+        var cubes_removed = [];
+        var handler = function(result) {
+          console.log("handling", result, "from Anti-austerity Protests");
+          cubes_removed.push(result);
+        };
+
+        var should_remove = ['y', 'r'];
+        var color = should_remove.shift();
+        var next_promise = $scope.remove(color).then(handler);
+        while (should_remove.length > 0) {
+          color = should_remove.shift();
+          next_promise = next_promise
+            .then($scope.remove(color).then(handler));
+        }
+        next_promise.then(function(data) {
+          console.log("we have all", cubes_removed);
+        });
+      }
+    }, {
+      cubes: ['r', 'y'],
+      title: 'Anti-austerity Protests',
+      text: 'Increase Popularity by one ' +
+            ' and add <span class="cube cube-b"></span>',
       action: function() {
         $scope.model.popularity += 1;
         $scope.model.used.push('b');
       }
-    },
-    rr: {
+    }],
+    rr: [{
       cubes: ['r', 'r'],
       title: 'Industrial Violations',
       text: 'decrease Public Safety by two.',
       action: function() {
         $scope.model.public_safety -= 2;
       }
-    },
-    rw: {
+    }],
+    rw: [{
       cubes: ['r', 'w'],
       title: 'Welfare Cheats',
       text: 'decrease Employment by one.',
       action: function() {
         $scope.model.employment -= 1;
       }
-    },
-    ww: {
+    }],
+    ww: [{
       cubes: ['w', 'w'],
       title: 'Back-to-Work Programme',
       text: 'increase Employment by two.',
       action: function() {
         $scope.model.employment += 2;
       }
-    },
-    yy: {
+    }],
+    yy: [{
       cubes: ['y', 'y'],
       title: 'Budget Surplus',
-      text: 'increate Wealth by one; (TODO may spend both cubes to fund a single already-funded institution).',
+      text: 'increate Wealth by one',
       action: function() {
         $scope.model.wealth += 1;
       }
-    },
-    by: {
+    }, {
+      cubes: ['y', 'y'],
+      title: 'Budget Surplus',
+      text: 'increate Wealth by one and spend both cubes to fund a single already-funded institution)',
+      action: function() {
+        $scope.model.wealth += 1;
+        alert('not implemented');
+      }
+    }],
+    by: [{
       cubes: ['b', 'y'],
       title: 'Early Repayments',
-      text: '(TODO Optionnaly Spend <span class="cube cube-y"></span> to ' +
-            'Remove <span class="cube cube-b"></span>).',
+      text: 'Do nothing',
       action: function() {
       }
-    },
-    uy: {
+    }, {
+      cubes: ['b', 'y'],
+      title: 'Early Repayments',
+      text: 'Spend <span class="cube cube-y"></span> to ' +
+            'remove <span class="cube cube-b"></span>)',
+      action: function() {
+        alert('not implemented');
+      }
+    }],
+    uy: [{
       cubes: ['u', 'y'],
       title: 'Security Spending',
-      text: 'increate Popularity (TODO or Public Safety by one).',
+      text: 'increate Popularity by one',
       action: function() {
         $scope.model.popularity += 1;
       }
-    },
-    uu: {
+    }, {
+      cubes: ['u', 'y'],
+      title: 'Security Spending',
+      text: 'increate Public Safety by one).',
+      action: function() {
+        $scope.model.public_safety += 1;
+      }
+    }],
+    uu: [{
       cubes: ['u', 'u'],
       title: 'Falling Crime Rates',
       text: 'increase Public Safety by two.',
       action: function() {
         $scope.model.public_safety += 2;
       }
-    },
-    ru: {
+    }],
+    ru: [{
       cubes: ['r', 'u'],
       title: 'Special Operations',
-      text: '(TODO either Remove <span class="cube cube-u"></span> and ' +
-            '<span class="cube cube-r"></span> or) reduce Public Safety by one.',
+      text: 'Remove <span class="cube cube-u"></span> and ' +
+            '<span class="cube cube-r"></span>',
+      action: function() {
+        alert('Not implemented');
+      }
+    }, {
+      cubes: ['r', 'u'],
+      title: 'Special Operations',
+      text: 'reduce Public Safety by one.',
       action: function() {
         $scope.model.public_safety -= 1;
       }
-    },
-    uw: {
+    }],
+    uw: [{
       cubes: ['u', 'w'],
       title: 'Welfare Cheat Crackdown',
       text: '(either Remove <span class="cube cube-w"></span> or) increase ' +
@@ -166,24 +220,38 @@ angular.module( 'ngAusterity.home', [
         $scope.model.employment += 1;
         $scope.model.popularity -= 1;
       }
-    },
-    wy: {
+    }],
+    wy: [{
       cubes: ['w', 'y'],
       title: 'Nationalised Healthcare Spending',
       text: 'increase Health by two.',
       action: function() {
         $scope.model.health += 2;
       }
-    },
-    bw: {
+    }],
+    bw: [{
       cubes: ['b', 'w'],
       title: 'Welfare Budget Problems',
-      text: '(TODO Spend <span class="cube cube-y"></span> or) reduce Health by one.',
+      text: 'Spend <span class="cube cube-y"></span>',
+      action: function() {
+        alert('not implemented');
+      }
+    }, {
+      cubes: ['b', 'w'],
+      title: 'Welfare Budget Problems',
+      text: 'Reduce Health by one',
       action: function() {
         $scope.model.health -= 1;
       }
-    }
+    }]
   };
+  $scope.flat_events = _($scope.events)
+    .values()
+    .flatten()
+    .map(function(e) {
+      e.code = _(e.cubes).join('');
+      return e;
+    }).value();
   $scope.scale_lines = [
     [10, '10'], [9, ''], [8, ''], [7, '7'], [6, ''],
     [5, '5'], [4, ''], [3, '3'], [2, ''], [1, '1'],
@@ -417,6 +485,8 @@ angular.module( 'ngAusterity.home', [
       choose_remove: []
     };
     $scope.model.bag = ['b', 'b', 'b', 'b', 'r', 'r', 'u', 'u', 'w', 'y'];
+    // INITIAL BAG
+    $scope.model.bag = ['r', 'y', 'r', 'y', 'r', 'y', 'r', 'y', 'r', 'y'];
     $scope.model.log.unshift('Game initialized');
   };
   $scope.model = {};
