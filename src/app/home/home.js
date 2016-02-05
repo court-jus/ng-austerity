@@ -45,7 +45,6 @@ angular.module( 'ngAusterity.home', [
   function HomeController(
     $scope, $localStorage, $q, $modal
     ) {
-  console.log($modal);
   $scope.events = {
     bb: [{
       cubes: ['b', 'b'],
@@ -62,8 +61,11 @@ angular.module( 'ngAusterity.home', [
       cubes: ['b', 'u'],
       title: 'Underfunded Police Force',
       text: 'Spend <span class="cube cube-y"></span>',
+      condition: function() {
+        return $scope.canspend();
+      },
       action: function() {
-        alert('Spend not implemented');
+        $scope.spend();
       }
     }, {
       cubes: ['b', 'u'],
@@ -88,24 +90,8 @@ angular.module( 'ngAusterity.home', [
             '<span class="cube cube-r"></span>',
       action: function() {
         $scope.model.log.unshift('Anti-austerity Protests: remove YR.');
-        $scope.candraw = false;
-        var cubes_removed = [];
-        var handler = function(result) {
-          console.log("handling", result, "from Anti-austerity Protests");
-          cubes_removed.push(result);
-        };
-
-        var should_remove = ['y', 'r'];
-        var color = should_remove.shift();
-        var next_promise = $scope.remove(color).then(handler);
-        while (should_remove.length > 0) {
-          color = should_remove.shift();
-          next_promise = next_promise
-            .then($scope.remove(color).then(handler));
-        }
-        next_promise.then(function(data) {
-          console.log("we have all", cubes_removed);
-        });
+        $scope.remove('y');
+        $scope.remove('r');
       }
     }, {
       cubes: ['r', 'y'],
@@ -151,7 +137,7 @@ angular.module( 'ngAusterity.home', [
     }, {
       cubes: ['y', 'y'],
       title: 'Budget Surplus',
-      text: 'increate Wealth by one and spend both cubes to fund a single already-funded institution)',
+      text: 'increate Wealth by one and spend both cubes to fund a single already-funded institution',
       action: function() {
         $scope.model.wealth += 1;
         alert('not implemented');
@@ -167,9 +153,13 @@ angular.module( 'ngAusterity.home', [
       cubes: ['b', 'y'],
       title: 'Early Repayments',
       text: 'Spend <span class="cube cube-y"></span> to ' +
-            'remove <span class="cube cube-b"></span>)',
+            'remove <span class="cube cube-b"></span>',
+      condition: function() {
+        return $scope.canspend();
+      },
       action: function() {
-        alert('not implemented');
+        $scope.spend();
+        $scope.remove('b');
       }
     }],
     uy: [{
@@ -182,7 +172,7 @@ angular.module( 'ngAusterity.home', [
     }, {
       cubes: ['u', 'y'],
       title: 'Security Spending',
-      text: 'increate Public Safety by one).',
+      text: 'increate Public Safety by one',
       action: function() {
         $scope.model.public_safety += 1;
       }
@@ -190,7 +180,7 @@ angular.module( 'ngAusterity.home', [
     uu: [{
       cubes: ['u', 'u'],
       title: 'Falling Crime Rates',
-      text: 'increase Public Safety by two.',
+      text: 'increase Public Safety by two',
       action: function() {
         $scope.model.public_safety += 2;
       }
@@ -200,8 +190,12 @@ angular.module( 'ngAusterity.home', [
       title: 'Special Operations',
       text: 'Remove <span class="cube cube-u"></span> and ' +
             '<span class="cube cube-r"></span>',
+      condition: function() {
+        return $scope.canremove('u') && $scope.canremove('r');
+      },
       action: function() {
-        alert('Not implemented');
+        $scope.remove('u');
+        $scope.remove('r');
       }
     }, {
       cubes: ['r', 'u'],
@@ -233,8 +227,11 @@ angular.module( 'ngAusterity.home', [
       cubes: ['b', 'w'],
       title: 'Welfare Budget Problems',
       text: 'Spend <span class="cube cube-y"></span>',
+      condition: function() {
+        return $scope.canspend();
+      },
       action: function() {
-        alert('not implemented');
+        $scope.spend();
       }
     }, {
       cubes: ['b', 'w'],
@@ -288,6 +285,21 @@ angular.module( 'ngAusterity.home', [
     collectionA.push(_(collectionB).pullAt(idx)[0]);
     return true;
   };
+  $scope.aRemoveColor = function(collectionA, color) {
+    if (!_(collectionA).contains(color)) {
+      return false;
+    }
+    var idx = _(collectionA).indexOf(color);
+    _(collectionA).pullAt(idx).value();
+    return true;
+  };
+  $scope.check_condition = function(event) {
+    if (!angular.isDefined(event.condition) ||
+        !angular.isFunction(event.condition)) {
+      return true;
+    }
+    return event.condition();
+  };
   $scope.resolve = function(event) {
     $scope.model.log.unshift(event.title + ': ' + event.text);
     event.action();
@@ -309,19 +321,19 @@ angular.module( 'ngAusterity.home', [
     }
     var lost = false;
     var message = null;
-    if ($scope.model.employment === 0) {
+    if ($scope.model.employment <= 0) {
       lost = true;
       message = 'Employment = 0, you Lose';
-    } else if ($scope.model.public_safety === 0) {
+    } else if ($scope.model.public_safety <= 0) {
       lost = true;
       message = 'Public Safety = 0, you Lose';
-    } else if ($scope.model.wealth === 0) {
+    } else if ($scope.model.wealth <= 0) {
       lost = true;
       message = 'Wealth = 0, you Lose';
-    } else if ($scope.model.health === 0) {
+    } else if ($scope.model.health <= 0) {
       lost = true;
       message = 'Health = 0, you Lose';
-    } else if ($scope.model.popularity === 0) {
+    } else if ($scope.model.popularity <= 0) {
       lost = true;
       message = 'Popularity = 0, you Lose';
     }
@@ -344,27 +356,13 @@ angular.module( 'ngAusterity.home', [
     $scope.model.bag.push('y');
   };
   $scope.canpayloan = function() {
-    return true;
-    // return $scope.canremove('y', 2) && $scope.canremove('b', 1);
-    /*
-    var usable = _($scope.model.used)
-                 .concat($scope.model.treasury)
-                 .concat($scope.model.current);
-    if (usable.countBy(function(i) { return i === 'y'; })
-              .value()['true'] >= 2 &&
-        usable.countBy(function(i) { return i === 'b'; })
-              .value()['true'] >= 1) {
-      return true;
-    }
-    return false;
-    */
+    return $scope.canremove('y', 2) && $scope.canremove('b', 1);
   };
   $scope.payloan = function() {
     $scope.model.log.unshift('Pay loan : remove YYB.');
     $scope.candraw = false;
     var cubes_removed = [];
     var handler = function(result) {
-      console.log("handling", result, "from payloan");
       cubes_removed.push(result);
     };
 
@@ -377,7 +375,6 @@ angular.module( 'ngAusterity.home', [
         .then($scope.remove(color).then(handler));
     }
     next_promise.then(function(data) {
-      console.log("we have all", cubes_removed);
     });
   };
   $scope.canremove = function(color, count) {
@@ -394,7 +391,62 @@ angular.module( 'ngAusterity.home', [
      * the Current area, you may remove it from the Used area or the Treasury
      * instead.
      */
-    var choices = ['a', 'b'];
+    if (_($scope.model.current).contains(color)) {
+      return $q(function(resolve, reject) {
+        $scope.aRemoveColor($scope.model.current, color);
+        resolve('current');
+      });
+    }
+    if (!_($scope.model.treasury).contains(color)) {
+      return $q(function(resolve, reject) {
+        $scope.aRemoveColor($scope.model.used, color);
+        resolve('used');
+      });
+    }
+    if (!_($scope.model.used).contains(color)) {
+      return $q(function(resolve, reject) {
+        $scope.aRemoveColor($scope.model.treasury, color);
+        resolve('treasury');
+      });
+    }
+    var choices = ['used', 'treasury'];
+    var modalInstance = $modal.open({
+      templateUrl: 'home/remove.modal.tpl.html',
+      controller: 'RemoveModalCtrl',
+      size: 'sm',
+      resolve: {
+        choices: function() {
+          return choices;
+        }
+      }
+    });
+    return modalInstance.result;
+  };
+  $scope.canspend = function(count) {
+    if (!count) { count = 1; }
+    var usable = _($scope.model.current)
+                 .concat($scope.model.treasury);
+    return (usable.countBy(function(i) { return i === 'y'; })
+                  .value()['true'] >= count);
+  };
+  $scope.spend = function() {
+    /* Spend - remove a yellow Income cube from the Treasury or the Current
+     * area and out of the game
+     */
+    var color = 'y';
+    if (!_($scope.model.current).contains(color)) {
+      return $q(function(resolve, reject) {
+        $scope.aRemoveColor($scope.model.treasury, color);
+        resolve('treasury');
+      });
+    }
+    if (!_($scope.model.treasury).contains(color)) {
+      return $q(function(resolve, reject) {
+        $scope.aRemoveColor($scope.model.current, color);
+        resolve('current');
+      });
+    }
+    var choices = ['current', 'treasury'];
     var modalInstance = $modal.open({
       templateUrl: 'home/remove.modal.tpl.html',
       controller: 'RemoveModalCtrl',
@@ -484,9 +536,9 @@ angular.module( 'ngAusterity.home', [
       social_welfare_fin: [],
       choose_remove: []
     };
-    $scope.model.bag = ['b', 'b', 'b', 'b', 'r', 'r', 'u', 'u', 'w', 'y'];
     // INITIAL BAG
     $scope.model.bag = ['r', 'y', 'r', 'y', 'r', 'y', 'r', 'y', 'r', 'y'];
+    $scope.model.bag = ['b', 'b', 'b', 'b', 'r', 'r', 'u', 'u', 'w', 'y'];
     $scope.model.log.unshift('Game initialized');
   };
   $scope.model = {};

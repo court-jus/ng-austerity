@@ -1,38 +1,87 @@
-<div class="hidden-md hidden-lg">
-  <button class="btn btn-default"
-          ng-click="draw()"
-          ng-show="model.bag.length > 0 && model.candraw">
-    Year {{ model.year }} - Draw
-  </button>
-  <button class="btn btn-default"
-          ng-click="eoy()"
-          ng-show="model.bag.length === 0 && model.current.length === 0">
-    End of Year {{ model.year }}
-  </button>
-  <div ng-repeat="(code, event_choices) in events"
-       ng-show="model.current_str === code">
-    <button class="btn btn-default"
-            ng-repeat="event in event_choices"
-            title="{{ event.title }}"
-            ng-click="resolve(event)"
-            ng-bind-html="event.text">
+<div class="hidden-md hidden-lg row">
+  <div class="col-sm-12">
+    <div class="row">
+      <div class="col-xs-12">
+        Bag:
+        <div class="cube cube-{{ cube }}"
+              ng-repeat="cube in model.bag track by $index"></div>
+      </div>
+    </div>
+    <div class="row">
+      <div class="col-xs-4">
+        Current<br/>
+        <div class="cube cube-{{ cube }}"
+              ng-repeat="cube in model.current track by $index"></div>
+      </div>
+      <div class="col-xs-4">
+        Used<br/>
+        <div class="cube cube-{{ cube }}"
+              ng-repeat="cube in model.used track by $index"></div>
+      </div>
+      <div class="col-xs-4">
+        Treasury<br/>
+        <div class="cube cube-{{ cube }}"
+              ng-repeat="cube in model.treasury track by $index"></div>
+      </div>
+    </div>
+    <div class="row">
+      <div class="col-xs-2"
+           title="Employment">
+        Em: {{ model.employment }}
+      </div>
+      <div class="col-xs-2"
+           title="Public safety">
+        PS: {{ model.public_safety }}
+      </div>
+      <div class="col-xs-2"
+           title="Wealth">
+        We: {{ model.wealth }}
+      </div>
+      <div class="col-xs-2"
+           title="Health">
+        He: {{ model.health }}
+      </div>
+      <div class="col-xs-2"
+           title="Popularity">
+        Po: {{ model.popularity }}
+      </div>
+    </div>
+    <button class="btn btn-default col-xs-12"
+            ng-click="draw()"
+            ng-show="model.bag.length > 0 && model.candraw">
+      Year {{ model.year }} - Draw
+    </button>
+    <button class="btn btn-default col-xs-12"
+            ng-click="eoy()"
+            ng-show="model.bag.length === 0 && model.current.length === 0">
+      End of Year {{ model.year }}
+    </button>
+    <div ng-repeat="(code, event_choices) in events"
+         ng-show="model.current_str === code">
+      <button class="btn btn-default col-xs-12"
+              ng-repeat="event in event_choices"
+              title="{{ event.title }}"
+              ng-click="resolve(event)"
+              ng-disabled="!check_condition(event)"
+              ng-bind-html="event.text">
+      </button>
+    </div>
+    <button class="btn btn-default col-xs-12"
+            ng-click="borrow()"
+            ng-disabled="model.bag.length === 0">
+      Borrow money
+    </button>
+    <button class="btn btn-default col-xs-12"
+            ng-click="taxes()"
+            ng-disabled="model.bag.length === 0">
+      Raise taxes
+    </button>
+    <button class="btn btn-default col-xs-12"
+            ng-click="payloan()"
+            ng-disabled="model.bag.length === 0 || !canpayloan()">
+      Pay loan
     </button>
   </div>
-  <button class="btn btn-default"
-          ng-click="borrow()"
-          ng-disabled="model.bag.length === 0">
-    Borrow money
-  </button>
-  <button class="btn btn-default"
-          ng-click="taxes()"
-          ng-disabled="model.bag.length === 0">
-    Raise taxes
-  </button>
-  <button class="btn btn-default"
-          ng-click="payloan()"
-          ng-disabled="model.bag.length === 0 || !canpayloan()">
-    Pay loan
-  </button>
 </div>
 <div class="col-md-12 hidden-xs hidden-sm">
   <div class="col-md-3">
@@ -90,6 +139,7 @@
          ng-show="model.current_str === code">
       <button class="btn btn-default col-sm-12"
               ng-click="resolve(event)"
+              ng-disabled="!check_condition(event)"
               ng-repeat="event in event_choices"
               ng-bind-html="event.text"
               title="{{ event.title }}">
@@ -176,23 +226,15 @@
     </table>
   </div>
 </div>
-
-<div class="col-sm-12 col-md-6">
-  <pre>{{ model.bag }}</pre>
-  <pre>{{ model.current_str }}</pre>
-  <pre>{{ model.used }}</pre>
-  <pre>{{ model.treasury }}</pre>
-  <span>Employment: {{ model.employment }}</span><br />
-  <span>Public Safety: {{ model.public_safety }}</span><br />
-  <span>Wealth: {{ model.wealth }}</span><br />
-  <span>Health: {{ model.health }}</span><br />
-  <span>Popularity: {{ model.popularity }}</span><br />
-  <span>Private enterprise: {{ model.private_enterprise_fin }}, {{ model.private_enterprise_cuts }} cuts.</span><br />
-  <span>National security: {{ model.national_security_fin }}, {{ model.national_security_cuts }} cuts.</span><br />
-  <span>Social welfare: {{ model.social_welfare_fin }}, {{ model.social_welfare_cuts }} cuts.</span><br />
-</div>
-<div class="col-sm-12 col-md-6">
-  <ul>
-    <li ng-repeat="logline in model.log track by $index">{{ logline }}</li>
-  </ul>
+<div class="row">
+  <div class="col-sm-12 col-md-6">
+    <span>Private enterprise: {{ model.private_enterprise_fin }}, {{ model.private_enterprise_cuts }} cuts.</span><br />
+    <span>National security: {{ model.national_security_fin }}, {{ model.national_security_cuts }} cuts.</span><br />
+    <span>Social welfare: {{ model.social_welfare_fin }}, {{ model.social_welfare_cuts }} cuts.</span><br />
+  </div>
+  <div class="col-sm-12 col-md-6">
+    <ul>
+      <li ng-repeat="logline in model.log track by $index">{{ logline }}</li>
+    </ul>
+  </div>
 </div>
