@@ -250,9 +250,9 @@ angular.module( 'ngAusterity.home', [
       return e;
     }).value();
   $scope.scale_lines = [
-    [10, '10'], [9, ''], [8, ''], [7, '7'], [6, ''],
-    [5, '5'], [4, ''], [3, '3'], [2, ''], [1, '1'],
-    [0, '']
+    [10, '10', 2], [9, '', 2], [8, '', 1], [7, '7', 1], [6, '', 1],
+    [5, '5', 1], [4, '', 0], [3, '3', 0], [2, '', 0], [1, '1', 0],
+    [0, '', 0]
   ];
   $scope.drawOne = function(collection) {
     return _.pullAt(collection, _.random(collection.length-1))[0];
@@ -534,7 +534,10 @@ angular.module( 'ngAusterity.home', [
       private_enterprise_fin: [],
       national_security_fin: [],
       social_welfare_fin: [],
-      choose_remove: []
+      choose_remove: [],
+      can_invest_pe: true,
+      can_invest_ns: true,
+      can_invest_sw: true
     };
     // INITIAL BAG
     $scope.model.bag = ['r', 'y', 'r', 'y', 'r', 'y', 'r', 'y', 'r', 'y'];

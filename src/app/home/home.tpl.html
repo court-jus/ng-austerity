@@ -84,146 +84,275 @@
   </div>
 </div>
 <div class="col-md-12 hidden-xs hidden-sm">
-  <div class="col-md-3">
-    <div class="panel panel-default">
-      <div class="panel-heading">
-        Bag
+  <div class="col-md-6">
+    <div class="row">
+      <div class="col-md-6">
+        <div class="panel panel-default">
+          <div class="panel-heading">
+            Bag
+          </div>
+          <div class="panel-body">
+            <div class="cube cube-{{ cube }}"
+                  ng-repeat="cube in model.bag track by $index"></div>
+          </div>
+        </div>
+        <div class="panel panel-default">
+          <div class="panel-heading">Current</div>
+          <div class="panel-body">
+            <div class="cube cube-{{ cube }}"
+                  ng-repeat="cube in model.current track by $index"></div>
+          </div>
+        </div>
+        <div class="panel panel-default">
+          <div class="panel-heading">
+            Used
+          </div>
+          <div class="panel-body">
+            <div class="cube cube-{{ cube }}"
+                  ng-repeat="cube in model.used track by $index"></div>
+          </div>
+        </div>
+        <div class="panel panel-default">
+          <div class="panel-heading">
+            Treasury
+          </div>
+          <div class="panel-body">
+            <div class="cube cube-{{ cube }}"
+                  ng-repeat="cube in model.treasury track by $index"></div>
+          </div>
+        </div>
       </div>
-      <div class="panel-body">
-        <div class="cube cube-{{ cube }}"
-              ng-repeat="cube in model.bag track by $index"></div>
+      <div class="col-md-6"
+           ng-hide="model.gameover">
+        <button class="btn btn-default col-sm-12"
+                ng-click="draw()"
+                ng-show="model.bag.length > 0 && model.candraw">
+          Year {{ model.year }} - <b>Draw</b>
+        </button>
+        <div ng-repeat="(code, event_choices) in events"
+             ng-show="model.current_str === code">
+          <button class="btn btn-default col-sm-12"
+                  ng-click="resolve(event)"
+                  ng-disabled="!check_condition(event)"
+                  ng-repeat="event in event_choices"
+                  ng-bind-html="event.text"
+                  title="{{ event.title }}">
+          </button>
+        </div>
+        <button class="btn btn-default col-sm-12"
+                ng-click="eoy()"
+                ng-show="model.bag.length === 0 && model.current.length === 0">
+          <b>End of Year</b> {{ model.year }}
+        </button>
+        <button class="btn btn-default col-sm-12"
+                ng-click="borrow()"
+                ng-disabled="model.bag.length === 0">
+          <b>Borrow money</b><hr />
+          Add <span class="cube cube-y"></span><span class="cube cube-y"></span>
+          to bag <span class="cube cube-b"></span>
+        </button>
+        <button class="btn btn-default col-sm-12"
+                ng-click="taxes()"
+                ng-disabled="model.bag.length === 0">
+          <b>Raise taxes</b><hr />
+          Add to bag <span class="cube cube-y"></span><span class="cube cube-r"></span>
+        </button>
+        <button class="btn btn-default col-sm-12"
+                ng-click="payloan()"
+                ng-disabled="model.bag.length === 0 || !canpayloan()">
+          <b>Pay loan</b><hr />
+          Remove <span class="cube cube-y"></span><span class="cube cube-y"></span><span class="cube cube-b"></span>
+        </button>
+      </div>
+      <div class="col-md-3 text-center"
+           ng-show="model.gameover">
+        <h2 class="text-danger">Game Over</h2>
+        <h4>{{ model.gameover }}</h4>
+        Current year : {{ model.year }}
+        <button class="btn btn-default col-sm-12"
+                ng-click="newgame()"
+                ng-disabled="model.bag.length === 0">
+          <b>New game</b>
+        </button>
       </div>
     </div>
-    <div class="panel panel-default">
-      <div class="panel-heading">Current</div>
-      <div class="panel-body">
-        <div class="cube cube-{{ cube }}"
-              ng-repeat="cube in model.current track by $index"></div>
+    <div class="row">
+      <div class="col-md-4 investment">
+        <div class="panel panel-default">
+          <div class="panel-heading">
+            <a href=""
+               title="Invest"
+               ng-click="model.can_invest_pe && invest('private_enterprise')">
+              PRIVATE ENTERPRISE
+              <i class="fa fa-money" ng-show="model.can_invest_pe"></i>
+            </a>
+          </div>
+          <div class="panel-body">
+            <div class="cube cube-y"></div>
+            &rarr; +1 Employment
+            <hr />
+            <div>
+              <div class="inline">
+                <div class="cube-couple">
+                  <div class="cube cube-b"></div>
+                  <div class="cube cube-y"></div>
+                </div>
+                <div class="cube-couple">
+                  <div class="cube cube-b"></div>
+                  <div class="cube cube-r"></div>
+                </div>
+                <div class="cube-couple">
+                  <div class="cube cube-b"></div>
+                  <div class="cube cube-w"></div>
+                </div>
+              </div>
+              <div class="inline investment-cut"></div>
+              <div class="inline investment-cut"></div>
+              <div class="inline investment-cut"></div>
+              <div class="inline investment-last-cut"
+                   title="-2 Employment">-2 Em</div>
+            </div>
+          </div>
+        </div>
       </div>
-    </div>
-    <div class="panel panel-default">
-      <div class="panel-heading">
-        Used
-        <i class="fa fa-trash"
-           title="Remove from here"
-           ng-show="model.choose_remove.length > 0"
-           ng-click="remove(choose_remove, 'used')"></i>
+      <div class="col-md-4 investment">
+        <div class="panel panel-default">
+          <div class="panel-heading">
+            <a href=""
+               title="Invest"
+               ng-click="model.can_invest_ns && invest('national_security')">
+              NATIONAL SECURITY
+              <i class="fa fa-money" ng-show="model.can_invest_ns"></i>
+            </a>
+          </div>
+          <div class="panel-body">
+            <div class="cube cube-y"></div>
+            &rarr; Add <div class="cube cube-u"></div>
+            <hr />
+            <div>
+              <div class="inline">
+                <div class="cube-couple">
+                  <div class="cube cube-b"></div>
+                  <div class="cube cube-r"></div>
+                </div>
+                <div class="cube-couple">
+                  <div class="cube cube-b"></div>
+                  <div class="cube cube-u"></div>
+                </div>
+              </div>
+              <div class="inline investment-cut"></div>
+              <div class="inline investment-cut"></div>
+              <div class="inline investment-cut"></div>
+              <div class="inline investment-last-cut">
+                Add <div class="cube cube-r"></div>
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
-      <div class="panel-body">
-        <div class="cube cube-{{ cube }}"
-              ng-repeat="cube in model.used track by $index"></div>
-      </div>
-    </div>
-    <div class="panel panel-default">
-      <div class="panel-heading">
-        Treasury
-        <i class="fa fa-trash"
-           title="Remove from here"
-           ng-show="model.choose_remove.length > 0"
-           ng-click="remove(choose_remove, 'treasury')"></i>
-      </div>
-      <div class="panel-body">
-        <div class="cube cube-{{ cube }}"
-              ng-repeat="cube in model.treasury track by $index"></div>
+      <div class="col-md-4 investment">
+        <div class="panel panel-default">
+          <div class="panel-heading">
+            <a href=""
+               title="Invest"
+               ng-click="model.can_invest_sw && invest('social_welfare')">
+              SOCIAL WELFARE
+              <i class="fa fa-money" ng-show="model.can_invest_sw"></i>
+            </a>
+          </div>
+          <div class="panel-body">
+            <div class="cube cube-y"></div>
+            &rarr; Add <div class="cube cube-w"></div>
+            <hr />
+            <div>
+              <div class="inline">
+                <div class="cube-couple">
+                  <div class="cube cube-b"></div>
+                  <div class="cube cube-u"></div>
+                </div>
+                <div class="cube-couple">
+                  <div class="cube cube-b"></div>
+                  <div class="cube cube-y"></div>
+                </div>
+                <div class="cube-couple">
+                  <div class="cube cube-b"></div>
+                  <div class="cube cube-w"></div>
+                </div>
+              </div>
+              <div class="inline investment-cut">1</div>
+              <div class="inline investment-cut">1</div>
+              <div class="inline investment-cut">1</div>
+              <div class="inline investment-last-cut" title="-2 Health">-2 He</div>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
   </div>
-  <div class="col-md-3"
-       ng-hide="model.gameover">
-    <button class="btn btn-default col-sm-12"
-            ng-click="draw()"
-            ng-show="model.bag.length > 0 && model.candraw">
-      Year {{ model.year }} - <b>Draw</b>
-    </button>
-    <div ng-repeat="(code, event_choices) in events"
-         ng-show="model.current_str === code">
-      <button class="btn btn-default col-sm-12"
-              ng-click="resolve(event)"
-              ng-disabled="!check_condition(event)"
-              ng-repeat="event in event_choices"
-              ng-bind-html="event.text"
-              title="{{ event.title }}">
-      </button>
+
+
+
+
+  <div class="col-md-6">
+    <div class="col-md-8">
+      <ul>
+        <li ng-repeat="(code, event_choices) in events"
+            ng-class="{'text-primary': model.current_str === code,
+                       'text-muted': model.current_str !== code}">
+          <span ng-repeat="cube in event_choices[0].cubes track by $index"
+                class="cube cube-{{ cube }}"></span>
+          {{ event_choices[0].title }}:<br />
+          <ul>
+            <li ng-repeat="event in event_choices">
+              <small ng-bind-html="event.text"></small>
+            </li>
+          </ul>
+        </li>
+      </ul>
     </div>
-    <button class="btn btn-default col-sm-12"
-            ng-click="eoy()"
-            ng-show="model.bag.length === 0 && model.current.length === 0">
-      <b>End of Year</b> {{ model.year }}
-    </button>
-    <button class="btn btn-default col-sm-12"
-            ng-click="borrow()"
-            ng-disabled="model.bag.length === 0">
-      <b>Borrow money</b><hr />
-      Add <span class="cube cube-y"></span><span class="cube cube-y"></span>
-      to bag <span class="cube cube-b"></span>
-    </button>
-    <button class="btn btn-default col-sm-12"
-            ng-click="taxes()"
-            ng-disabled="model.bag.length === 0">
-      <b>Raise taxes</b><hr />
-      Add to bag <span class="cube cube-y"></span><span class="cube cube-r"></span>
-    </button>
-    <button class="btn btn-default col-sm-12"
-            ng-click="payloan()"
-            ng-disabled="model.bag.length === 0 || !canpayloan()">
-      <b>Pay loan</b><hr />
-      Remove <span class="cube cube-y"></span><span class="cube cube-y"></span><span class="cube cube-b"></span>
-    </button>
-  </div>
-  <div class="col-md-3 text-center"
-       ng-show="model.gameover">
-    <h2 class="text-danger">Game Over</h2>
-    <h4>{{ model.gameover }}</h4>
-    Current year : {{ model.year }}
-    <button class="btn btn-default col-sm-12"
-            ng-click="newgame()"
-            ng-disabled="model.bag.length === 0">
-      <b>New game</b>
-    </button>
-  </div>
-  <div class="col-md-4">
-    <ul>
-      <li ng-repeat="(code, event_choices) in events"
-          ng-class="{'text-primary': model.current_str === code,
-                     'text-muted': model.current_str !== code}">
-        <span ng-repeat="cube in event_choices[0].cubes track by $index"
-              class="cube cube-{{ cube }}"></span>
-        {{ event_choices[0].title }}:<br />
-        <ul>
-          <li ng-repeat="event in event_choices">
-            <small ng-bind-html="event.text"></small>
-          </li>
-        </ul>
-      </li>
-    </ul>
-  </div>
-  <div class="col-md-2">
-    <table class="table rhs-tracks">
-      <thead>
-        <tr>
-          <th>E</th>
-          <th>PS</th>
-          <th>W</th>
-          <th>H</th>
-          <th>P</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr ng-repeat="line in scale_lines track by $index">
-          <td ng-repeat="n in [model.employment,
-                               model.public_safety,
-                               model.wealth,
-                               model.health,
-                               model.popularity] track by $index"
-              class="text-center"
-              ng-class="{'activescale': n === line[0],
-                         'text-danger': n === 0}">
-            <b ng-show="n === line[0]">{{ n }}</b>
-            <small ng-hide="n === line[0]">{{ line[1] }}</small>
-          </td>
-        </tr>
-      </tbody>
-    </table>
+    <div class="col-md-4">
+      <table class="table rhs-tracks">
+        <thead>
+          <tr>
+            <th title="Employment">
+              <div>Em</div>
+            </th>
+            <th title="Public Safety">
+              <div>PS</div>
+            </th>
+            <th title="Wealth">
+              <div>We</div>
+            </th>
+            <th title="Health">
+              <div>He</div>
+            </th>
+            <th title="Popularity">
+              <div>Po</div>
+            </th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr ng-repeat="line in scale_lines track by $index">
+            <td ng-repeat="n in [model.employment,
+                                 model.public_safety,
+                                 model.wealth,
+                                 model.health,
+                                 model.popularity] track by $index"
+                class="text-center"
+                ng-class="{'activescale': n === line[0],
+                           'text-danger': n === 0}">
+              <b ng-show="n === line[0]">{{ n }}</b>
+              <small ng-hide="n === line[0]">{{ line[1] }}</small>
+              <small ng-show="$first && line[2] > 0"
+                     class="taxrevenue"
+                     title="Tax revenue">
+                {{ line[2] }}
+              </small>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
   </div>
 </div>
 <div class="row">

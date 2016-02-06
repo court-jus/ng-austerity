@@ -21,6 +21,8 @@
     border: 1px solid black;
     display: inline-block;
     margin: 2px;
+    position: relative;
+    top: 3px;
     &.cube-b {
         background-color: black;
     }
@@ -38,9 +40,55 @@
     }
 }
 
+.investment {
+  font-size: 0.7em;
+  .panel-heading {
+    i.fa {
+      float: right;
+    }
+  }
+  .panel-body {
+    padding: 5px;
+    text-align: center;
+  }
+  hr {
+    margin-top: 3px;
+    margin-bottom: 3px;
+  }
+  .inline {
+    display: inline-block;
+    vertical-align: middle;
+    text-align: center;
+    line-height: 2.2em;
+    &.investment-cut {
+      width: 20px;
+      height: 25px;
+      border: 2px solid;
+    }
+    &.investment-last-cut {
+      width: 40px;
+      height: 25px;
+      border: 2px solid;
+    }
+  }
+  .cube-couple {
+    line-height: 1em;
+    .cube {
+      margin: 0px;
+    }
+  }
+}
+
 .rhs-tracks {
   border-collapse: separate;
   border-spacing: 2px;
+  thead {
+    th {
+      div {
+        width: 20px;
+      }
+    }
+  }
   tr {
     height: 40px;
   }
@@ -67,6 +115,13 @@
     }
     &.activescale {
       border: 2px solid black !important;
+    }
+    .taxrevenue {
+      float: right;
+      position: relative;
+      font-size: 0.5em;
+      top: 15px;
+      left: 5px;
     }
   }
 }
